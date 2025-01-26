@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-assistant
+  namespace: home-assistant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: home-assistant
+  template:
+    metadata:
+      labels:
+        app: home-assistant
+    spec:
+      containers:
+        - name: home-assistant
+          image: homeassistant/home-assistant:stable
+          env:
+          - name: HA_LOG_LEVEL
+            value: "debug"
+          ports:
+            - containerPort: 8123
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: zigbee-usb
+              mountPath: /dev/serial/by-id
+              readOnly: true
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: home-assistant-pvc
+        - name: zigbee-usb
+          hostPath:
+            path: /dev/serial/by-id
+            type: Directory

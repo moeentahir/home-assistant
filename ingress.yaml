@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: home-assistant-ingress
+  namespace: home-assistant
+  annotations:
+    #nginx.ingress.kubernetes.io/ssl-redirect: "true" # Disable SSL redirection if you're not using HTTPS
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    app.kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod" # Use the ClusterIssuer
+
+spec:
+  tls:
+  - hosts:
+    - moeen-home-assistant.duckdns.org
+    secretName: home-assistant-tls  # The secret you just created
+  rules:
+  - host: moeen-home-assistant.duckdns.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: home-assistant
+            port:
+              number: 80
+

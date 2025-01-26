@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: duckdns-updater
+  namespace: default
+spec:
+  schedule: "*/5 * * * *" # Runs every 5 minutes
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: duckdns
+            image: curlimages/curl:latest
+            args:
+            - "-s"
+            - "https://www.duckdns.org/update?domains=moeen-home-assistant.duckdns.org&token=a439fb36-350a-4102-b2df-6a6dbc4a00aa&ip=192.168.68.100"
+          restartPolicy: OnFailure
+
